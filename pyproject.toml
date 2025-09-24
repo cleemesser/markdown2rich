@@ -1,0 +1,69 @@
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "markdown2rich"
+version = "0.1.0dev"
+description = "A CLI tool to render Markdown using Python's rich library"
+readme = "README.md"
+license = {text = "MIT"}
+authors = [
+    {name = "Chris Lee", email = "your-email@example.com"}
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Text Processing :: Markup",
+    "Topic :: Utilities",
+]
+keywords = ["markdown", "rich", "cli", "terminal", "preview"]
+requires-python = ">=3.8"
+dependencies = [
+    "rich>=10.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "pytest-cov",
+    "black",
+    "flake8",
+    "mypy",
+]
+
+[project.urls]
+Homepage = "https://github.com/cleemesser/markdown2rich"
+Repository = "https://github.com/cleemesser/markdown2rich.git"
+Issues = "https://github.com/cleemesser/markdown2rich/issues"
+
+[project.scripts]
+markdown2rich = "markdown2rich.cli:main"
+
+[tool.setuptools]
+packages = ["markdown2rich"]
+
+[tool.black]
+line-length = 88
+target-version = ['py38']
+
+[tool.mypy]
+python_version = "3.8"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
