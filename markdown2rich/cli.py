@@ -4,16 +4,18 @@
 import sys
 import argparse
 from pathlib import Path
+import io
 from rich.console import Console
 from rich.markdown import Markdown
 
 
 def render_markdown(content: str, force_terminal: bool = True) -> str:
     """Render markdown content using rich and return as text."""
-    console = Console(record=True, force_terminal=force_terminal)
+    f = io.StringIO()
+    console = Console(file=f, force_terminal=force_terminal)
     md = Markdown(content)
     console.print(md)
-    return console.export_text()
+    return f.getvalue()
 
 
 def main():
