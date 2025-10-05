@@ -17,9 +17,11 @@ A CLI tool to render Markdown files using Python's [rich](https://github.com/Tex
 ```bash
 # Run directly from GitHub (latest version)
 uvx --from git+https://github.com/cleemesser/markdown2rich.git markdown2rich README.md
-
+```
 # Or install and run
-uvx markdown2rich README.md
+```
+uv tool install --from git+https://github.com/cleemesser/markdown2rich.git markdown2rich
+markdown2rich README.md
 ```
 
 ### Using pipx or uv (recommended for regular use)
@@ -30,12 +32,6 @@ pipx install git+https://github.com/cleemesser/markdown2rich.git
 ```
 will update this to `pipx install markdown2rich` if I decide to upload to pypi
 
-
-### Using pip
-
-```bash
-pip install markdown2rich
-```
 
 ## Usage
 
@@ -137,7 +133,7 @@ This repository includes an Emacs package for seamless Markdown preview integrat
 
 - `markdown-preview-rich-command`: Command to use. Options include:
   - `"markdown2rich"` (default - for pip/pipx installations)
-  - `"uvx --from git+https://github.com/cleemesser/markdown2rich.git markdown2rich"` (uvx from GitHub)
+  - `"uvx -q --from git+https://github.com/cleemesser/markdown2rich.git markdown2rich"` (uvx from GitHub)
   - `"uvx markdown2rich"` (uvx from PyPI)
   - Custom command string
 - `markdown-preview-rich-buffer-name`: Preview buffer name
@@ -145,13 +141,23 @@ This repository includes an Emacs package for seamless Markdown preview integrat
 - `markdown-preview-rich-keybinding`: Key binding for the preview function
 
 #### Example Configuration for uvx
+If you have uvx installed, this is the easiest way to get started inside emacs 30+:
+```elisp
+(use-package markdown-preview-with-rich
+  :vc (:url "https://github.com/cleemesser/markdown2rich.git" :rev :newest)
+  :after markdown-mode
+  :custom
+  (markdown-preview-rich-command "uvx -q --from git+https://github.com/cleemesser/markdown2rich.git markdown2rich")
+  ;; (markdown-preview-rich-command "markdown2rich")
+  (markdown-preview-rich-display-action 'pop-to-buffer))
+```
 
 ```elisp
 (use-package markdown-preview-with-rich
   :straight (:host github :repo "cleemesser/markdown2rich" :files ("markdown-preview-with-rich.el"))
   :after markdown-mode
   :custom
-  (markdown-preview-rich-command "uvx --from git+https://github.com/cleemesser/markdown2rich.git markdown2rich")
+  (markdown-preview-rich-command "uvx -q --from git+https://github.com/cleemesser/markdown2rich.git markdown2rich")
   (markdown-preview-rich-display-action 'pop-to-buffer))
 ```
 
