@@ -50,13 +50,13 @@
   "Command to use for rendering Markdown with rich.
 Can be:
 - \"markdown2rich\" (if installed via pip/pipx)
-- \"uvx --from git+https://github.com/cleemesser/markdown2rich.git markdown2rich\"
+- \"uvx -q --from git+https://github.com/cleemesser/markdown2rich.git markdown2rich\"
 - \"uvx markdown2rich\" (if available in PyPI)
 - Custom command string"
   :type '(choice
           (const :tag "Local installation (pip/pipx)" "markdown2rich")
-          (const :tag "uvx from GitHub" "uvx --from git+https://github.com/cleemesser/markdown2rich.git markdown2rich")
-          (const :tag "uvx from PyPI" "uvx markdown2rich")
+          (const :tag "uvx from GitHub" "uvx -q --from git+https://github.com/cleemesser/markdown2rich.git markdown2rich")
+          (const :tag "uvx from PyPI" "uvx -q markdown2rich")
           (string :tag "Custom command"))
   :group 'markdown-preview-rich)
 
@@ -87,7 +87,7 @@ Can be 'switch-to-buffer, 'pop-to-buffer, or 'display-buffer."
        ((string= base-cmd "markdown2rich")
         (error "Command 'markdown2rich' not found. Install via: pip install markdown2rich or pipx install git+https://github.com/cleemesser/markdown2rich.git"))
        ((string= base-cmd "uvx")
-        (error "Command 'uvx' not found. Please install uv: pip install uv"))
+        (error "Command 'uvx' not found. Please install uv: https://docs.astral.sh/uv/getting-started/installation/ or pipx install uv"))
        (t
         (error "Command '%s' not found. Please check your markdown-preview-rich-command setting" base-cmd))))))
 
