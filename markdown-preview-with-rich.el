@@ -39,6 +39,8 @@
 
 ;;; Code:
 
+(require 'ansi-color)
+
 (defgroup markdown-preview-rich nil
   "Preview Markdown using rich library."
   :group 'markdown
@@ -106,6 +108,7 @@ Can be 'switch-to-buffer, 'pop-to-buffer, or 'display-buffer."
             (let ((inhibit-read-only t))
               (erase-buffer)
               (insert command-output)
+              (ansi-color-apply-on-region (point-min) (point-max))
               (goto-char (point-min))
               (setq-local buffer-read-only t)
               (setq-local revert-buffer-function
