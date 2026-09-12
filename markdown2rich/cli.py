@@ -9,8 +9,20 @@ from rich.console import Console
 from rich.markdown import Markdown
 
 
-def render_markdown(content: str, force_terminal: bool = True) -> str:
-    """Render markdown content using rich and return as text."""
+def render_markdown(
+    content: str, force_terminal: bool = True, tex: bool = False
+) -> str:
+    """Render markdown content using rich and return as text.
+
+    When ``tex`` is set, LaTeX math between dollar signs is converted to Unicode
+    before the markdown is parsed -- rich's markdown renderer has no notion of
+    math and would otherwise print the raw LaTeX.
+    """
+    if tex:
+        from .latex import convert_latex_math
+
+        content = convert_latex_math(content)
+
     f = io.StringIO()
     console = Console(file=f, force_terminal=force_terminal)
     md = Markdown(content)
@@ -38,6 +50,13 @@ def main():
     )
 
     parser.add_argument(
+        "-tex", "--tex",
+        action="store_true",
+        dest="tex",
+        help="Convert LaTeX math between $...$ and $$...$$ to Unicode text"
+    )
+
+    parser.add_argument(
         "--version",
         action="version",
         version="markdown2rich 0.1.0"
@@ -58,7 +77,9 @@ def main():
 
         # Render and output
         force_terminal = not args.no_force_terminal
-        rendered = render_markdown(content, force_terminal=force_terminal)
+        rendered = render_markdown(
+            content, force_terminal=force_terminal, tex=args.tex
+        )
         sys.stdout.write(rendered)
 
     except KeyboardInterrupt:

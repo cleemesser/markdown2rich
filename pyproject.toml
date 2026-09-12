@@ -29,6 +29,7 @@ classifiers = [
 keywords = ["markdown", "rich", "cli", "terminal", "preview"]
 requires-python = ">=3.8"
 dependencies = [
+    "pylatexenc>=3.0b2",
     "rich>=10.0.0",
 ]
 

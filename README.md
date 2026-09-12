@@ -5,6 +5,7 @@ A CLI tool to render Markdown files using Python's [rich](https://github.com/Tex
 ## Features
 
 - Render Markdown files with rich terminal formatting
+- Optional LaTeX math rendering: `$E = mc^2$` becomes `E = mc²` (`-tex`)
 - Support for tables, code blocks, lists, and other Markdown elements
 - Read from files or stdin
 - Beautiful syntax highlighting
@@ -59,7 +60,76 @@ markdown2rich --version
 
 # Disable forced terminal output (auto-detect terminal capabilities)
 markdown2rich --no-force-terminal README.md
+
+# Convert LaTeX math between dollar signs to Unicode
+markdown2rich -tex paper.md
 ```
+
+### LaTeX math (`-tex`)
+
+`rich.markdown` has no notion of math and prints raw LaTeX verbatim.  With
+`-tex` (or `--tex`), math spans are converted to Unicode by
+[pylatexenc](https://github.com/phfaist/pylatexenc) before the markdown is
+parsed:
+
+| Source | Rendered |
+| --- | --- |
+| `$E = mc^2$` | `E = mc²` |
+| `$\alpha_i$` | `αᵢ` |
+| `$2^{10}$` | `2¹⁰` |
+| `$$\int_0^\infty e^{-x^2}\,dx = \frac{\sqrt{\pi}}{2}$$` | `∫₀^∞e^(-x²) dx = (√(π))/2` |
+
+#### What counts as math
+
+Every `$` is a candidate, but a span is only converted when all of the
+following hold.  Anything rejected is left in the output exactly as written.
+
+- **It is not inside code.**  Fenced blocks and inline code spans are skipped
+  whole, so `` `$PATH` `` and a `$HOME` inside a ```` ```bash ```` block are
+  never touched.
+- **It is not escaped.**  A `\$` never opens a span.
+- **No whitespace touches the delimiters.**  `$x$` is math; `$ x $` and `$x $`
+  are not.  This is what keeps `it costs $5, or $10 total` as prose -- the
+  closing candidate is preceded by a space.
+- **The body looks like math.**  It must contain a letter, a `\command`, or one
+  of `^` `_` `{` `}` -- or else be a complete signed number.  `$n$`, `$x + y$`,
+  `$+1$` and `$-0.7$` all qualify.  The `5-` left over from `a range of $5-$10`
+  does not, which is what keeps price ranges intact.
+- **It stays on the page.**  Inline `$...$` may not cross a line break at all.
+  Display `$$...$$` may wrap across lines but never across a blank line, so an
+  unclosed `$$` cannot swallow the rest of the document looking for a partner.
+  (Jupyter applies the same paragraph rule.)
+
+| Source | Result |
+| --- | --- |
+| `$n$`, `$x + y$`, `$+1$`, `$-0.7$` | converted |
+| `it costs $5, or $10 total` | left alone |
+| `a range of $5-$10` | left alone |
+| `$100,000 flat` | left alone |
+| `set $HOME and $PATH` | left alone |
+| `` `$PATH` `` | left alone |
+
+Converted math is backslash-escaped on the way out, because the result is fed
+back through the markdown parser -- an `_` or `*` that pylatexenc emitted must
+not turn into emphasis.
+
+#### Forcing a literal dollar sign
+
+Write `\$`.  An escaped dollar never opens a span, and markdown renders it as a
+plain `$`.  This is the explicit override for anything the heuristics get
+wrong, and there is one known case where it is needed: `$HOME/$PATH` -- two
+shell variables separated by a non-space character -- satisfies every rule
+above and will be converted.  Write `\$HOME/\$PATH`, or put it in backticks.
+
+#### Display math layout
+
+Display math that converts to a single line is rendered as an ordinary
+paragraph.  A result of more than one line -- `aligned`, `cases`, `matrix`,
+`array` -- is indented into a code block so that rich preserves the column
+alignment; markdown would otherwise join the lines and strip the leading spaces
+pylatexenc used to line the columns up.
+
+The flag is off by default; math-free documents render exactly as before.
 
 ## Examples
 
@@ -127,6 +197,8 @@ This repository includes an Emacs package for seamless Markdown preview integrat
 
 - **Command**: `M-x markdown-preview-with-rich`
 - **Keybinding**: `C-c r` (in markdown-mode)
+- **LaTeX math**: set `markdown-preview-rich-tex` to `t`, or hit `C-u C-c r` to
+  toggle math rendering for a single preview
 - **Customization**: `M-x customize-group RET markdown-preview-rich RET`
 
 ### Customization Options
@@ -138,6 +210,7 @@ This repository includes an Emacs package for seamless Markdown preview integrat
   - Custom command string
 - `markdown-preview-rich-buffer-name`: Preview buffer name
 - `markdown-preview-rich-display-action`: How to display the preview buffer
+- `markdown-preview-rich-tex`: When non-nil, pass `-tex` to render LaTeX math
 - `markdown-preview-rich-keybinding`: Key binding for the preview function
 
 #### Example Configuration for uvx
@@ -201,6 +274,7 @@ mypy markdown2rich/
 
 - Python 3.8+
 - rich >= 10.0.0
+- pylatexenc >= 3.0b2 (the 3.0 beta; used for the `-tex` math conversion)
 
 ## License
 

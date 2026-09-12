@@ -73,6 +73,13 @@ Can be 'switch-to-buffer, 'pop-to-buffer, or 'display-buffer."
                  (const :tag "Display buffer" display-buffer))
   :group 'markdown-preview-rich)
 
+(defcustom markdown-preview-rich-tex nil
+  "When non-nil, pass -tex so LaTeX math between dollar signs is rendered.
+Math such as $E = mc^2$ or $$\\int_0^\\infty e^{-x^2}dx$$ is converted to
+Unicode before rendering.  Requires a markdown2rich built with pylatexenc."
+  :type 'boolean
+  :group 'markdown-preview-rich)
+
 (defcustom markdown-preview-rich-keybinding "C-c r"
   "Key binding for markdown-preview-with-rich in markdown-mode."
   :type 'string
@@ -92,17 +99,23 @@ Can be 'switch-to-buffer, 'pop-to-buffer, or 'display-buffer."
         (error "Command '%s' not found. Please check your markdown-preview-rich-command setting" base-cmd))))))
 
 ;;;###autoload
-(defun markdown-preview-with-rich ()
-  "Preview current Markdown buffer using rich.markdown."
-  (interactive)
+(defun markdown-preview-with-rich (&optional toggle-tex)
+  "Preview current Markdown buffer using rich.markdown.
+With a prefix argument TOGGLE-TEX, invert `markdown-preview-rich-tex'
+for this preview only."
+  (interactive "P")
   (markdown-preview-rich--check-command)
   (let* ((buffer-content (buffer-substring-no-properties (point-min) (point-max)))
+         (tex (if toggle-tex
+                  (not markdown-preview-rich-tex)
+                markdown-preview-rich-tex))
          (output-buffer (get-buffer-create markdown-preview-rich-buffer-name))
          (tmpfile (make-temp-file "richmarkdown" nil ".md" buffer-content)))
     (unwind-protect
         (let ((command-output (shell-command-to-string
-                               (format "%s %s"
+                               (format "%s%s %s"
                                        markdown-preview-rich-command
+                                       (if tex " -tex" "")
                                        (shell-quote-argument tmpfile)))))
           (with-current-buffer output-buffer
             (let ((inhibit-read-only t))
@@ -113,7 +126,8 @@ Can be 'switch-to-buffer, 'pop-to-buffer, or 'display-buffer."
               (setq-local buffer-read-only t)
               (setq-local revert-buffer-function
                           (lambda (&optional _ignore-auto _noconfirm)
-                            (markdown-preview-with-rich)))))
+                            (let ((markdown-preview-rich-tex tex))
+                              (markdown-preview-with-rich))))))
           (funcall markdown-preview-rich-display-action output-buffer))
       (when (file-exists-p tmpfile)
         (delete-file tmpfile)))))
