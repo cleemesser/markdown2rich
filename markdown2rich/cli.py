@@ -59,7 +59,7 @@ def main():
     parser.add_argument(
         "--version",
         action="version",
-        version="markdown2rich 0.1.0"
+        version="markdown2rich 0.2.0" # TODO import this
     )
 
     args = parser.parse_args()
