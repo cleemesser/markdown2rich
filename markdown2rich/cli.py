@@ -50,7 +50,7 @@ def main():
     )
 
     parser.add_argument(
-        "-tex", "--tex",
+        "-t", "--tex",
         action="store_true",
         dest="tex",
         help="Convert LaTeX math between $...$ and $$...$$ to Unicode text"

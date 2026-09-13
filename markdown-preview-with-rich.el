@@ -74,7 +74,7 @@ Can be 'switch-to-buffer, 'pop-to-buffer, or 'display-buffer."
   :group 'markdown-preview-rich)
 
 (defcustom markdown-preview-rich-tex nil
-  "When non-nil, pass -tex so LaTeX math between dollar signs is rendered.
+  "When non-nil, pass --tex so LaTeX math between dollar signs is rendered.
 Math such as $E = mc^2$ or $$\\int_0^\\infty e^{-x^2}dx$$ is converted to
 Unicode before rendering.  Requires a markdown2rich built with pylatexenc."
   :type 'boolean
@@ -115,7 +115,7 @@ for this preview only."
         (let ((command-output (shell-command-to-string
                                (format "%s%s %s"
                                        markdown-preview-rich-command
-                                       (if tex " -tex" "")
+                                       (if tex " --tex" "")
                                        (shell-quote-argument tmpfile)))))
           (with-current-buffer output-buffer
             (let ((inhibit-read-only t))

@@ -5,7 +5,7 @@ A CLI tool to render Markdown files using Python's [rich](https://github.com/Tex
 ## Features
 
 - Render Markdown files with rich terminal formatting
-- Optional LaTeX math rendering: `$E = mc^2$` becomes `E = mc²` (`-tex`)
+- Optional LaTeX math rendering: `$E = mc^2$` becomes `E = mc²` (`--tex`)
 - Support for tables, code blocks, lists, and other Markdown elements
 - Read from files or stdin
 - Beautiful syntax highlighting
@@ -47,6 +47,10 @@ cat README.md | markdown2rich
 
 # Using redirection
 markdown2rich < README.md
+
+# Render a markdown file and read it page by page on a *nix like system
+# use the -R option so that raw control characters are displayed (or -r)
+markdown2rich README.md | less -R
 ```
 
 ### Command-line options
@@ -62,13 +66,13 @@ markdown2rich --version
 markdown2rich --no-force-terminal README.md
 
 # Convert LaTeX math between dollar signs to Unicode
-markdown2rich -tex paper.md
+markdown2rich -t paper.md
 ```
 
-### LaTeX math (`-tex`)
+### LaTeX math (`--tex`)
 
 `rich.markdown` has no notion of math and prints raw LaTeX verbatim.  With
-`-tex` (or `--tex`), math spans are converted to Unicode by
+`-t` (or `--tex`), math spans are converted to Unicode by
 [pylatexenc](https://github.com/phfaist/pylatexenc) before the markdown is
 parsed:
 
@@ -210,7 +214,7 @@ This repository includes an Emacs package for seamless Markdown preview integrat
   - Custom command string
 - `markdown-preview-rich-buffer-name`: Preview buffer name
 - `markdown-preview-rich-display-action`: How to display the preview buffer
-- `markdown-preview-rich-tex`: When non-nil, pass `-tex` to render LaTeX math
+- `markdown-preview-rich-tex`: When non-nil, pass `--tex` to render LaTeX math
 - `markdown-preview-rich-keybinding`: Key binding for the preview function
 
 #### Example Configuration for uvx
@@ -274,7 +278,7 @@ mypy markdown2rich/
 
 - Python 3.8+
 - rich >= 10.0.0
-- pylatexenc >= 3.0b2 (the 3.0 beta; used for the `-tex` math conversion)
+- pylatexenc >= 3.0b2 (the 3.0 beta; used for the `--tex` math conversion)
 
 ## License
 
